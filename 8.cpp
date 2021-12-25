@@ -110,3 +110,63 @@ int main()
     }
     return 0;
 }
+/*
+Enter the no. of vectices in graph : 5
+Enter the matrix of size 5 x 5 : 
+0 7 8 5 0
+7 0 0 10 6 
+8 0 0 9 0  
+5 10 9 3 15
+0 6 0 15 0 
+
+Enter the source index : 0
+Vertex   Distance from Source
+0                0
+1                7
+2                8
+3                5
+4                13
+
+Do you want to continue (y/n) ? : y
+
+Enter the source index : 1
+Vertex   Distance from Source
+0                7
+1                0
+2                15
+3                10
+4                6
+
+Do you want to continue (y/n) ? : y
+
+Enter the source index : 2
+Vertex   Distance from Source
+0                8
+1                15
+2                0
+3                9
+4                21
+
+Do you want to continue (y/n) ? : y
+
+Enter the source index : 3
+Vertex   Distance from Source
+0                5
+1                10
+2                9
+3                0
+4                15
+
+Do you want to continue (y/n) ? : y
+
+Enter the source index : 4
+Vertex   Distance from Source
+0                13
+1                6
+2                21
+3                15
+4                0
+
+Do you want to continue (y/n) ? : n
+
+*/
