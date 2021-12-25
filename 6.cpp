@@ -1,286 +1,264 @@
-#include <iostream>
-#include <string.h>
+#include <bits/stdc++.h>
 using namespace std;
-class threaded //class for node creation
+class Thread_Node
 {
 public:
-    int d;          //store value
-    threaded *l;    //pointer of left node
-    threaded *r;    //pointer of right node
-    int left_flag;  //to determine normal pointer or thread
-    int right_flag; //to determine normal pointer or thread
+    int data;
+    Thread_Node *left;
+    Thread_Node *right;
+    int lbit;   // left flag
+    int rbit;   // right flag
 };
-class tbt
+class Threaded_BST
 {
 public:
-    threaded *dummy, *root, *parent, *child, *curr, *val, *pre = NULL, *succ = NULL;
-    void insert_node(); //insert number
-    void inordertra();  //inorder tree traversal
-    void preordertra(); //preorder tree traversal
-    void pre_succ(threaded *root, threaded *&pre, threaded *&suc, int no);
-    threaded *leftmost(threaded *root);  //find leftmost node in tree
-    threaded *rightmost(threaded *root); //find rightmost node in tree
-};
-void tbt ::insert_node()
-{
-    int cont;
-    threaded *rn, *ln; //store rightmost and leftmost node respectively
-    root = new threaded;
-    cout << "Enter root node: ";
-    cin >> root->d;
-    root->left_flag = root->right_flag = 0;
-    root->l = root->r = NULL;
-    dummy = new threaded;
-    dummy->d = 0;
-    dummy->l = root; //left node of dummy pointer points to root dummy->r=dummy; //right node of dummy pointer points to itself
+    Thread_Node *root, *dummy;
+    Thread_Node *extreme_leftNode;
+    Thread_Node *extreme_rightNode;
+    Thread_Node *parent, *child, *current, *val, *pre = NULL, *succ = NULL;
 
-    do
+    void Insert();
+    void Inorder_Traversal();
+    void Preorder_Traversal();
+    void Pre_Succ(Thread_Node *root, Thread_Node *&pre, Thread_Node *&succ, int key);
+    Thread_Node *leftmost(Thread_Node *root);
+    Thread_Node *rightmost(Thread_Node *root);
+};
+void Threaded_BST::Insert()
+{
+    root = new Thread_Node;
+    cout << "Enter root: ";
+    cin >> root->data;
+    root->lbit = root->rbit = 0;
+    root->left = root->right = NULL;
+
+    // Dummy Node
+    dummy = new Thread_Node;
+    dummy->data = 0;
+    dummy->left = root;
+    dummy->right = dummy;
+
+    bool flag = true;
+    char ch;
+
+    while (flag)
     {
-        cout << endl;
-        child = new threaded;
-        cout << "Enter number: ";
-        cin >> child->d;
-        child->left_flag = child->right_flag = 0;
-        child->r = child->l = NULL;
+        child = new Thread_Node;
+        cout << "\nEnter the data: ";
+        cin >> child->data;
+        child->lbit = child->rbit = 0;
+        child->left = child->right = NULL;
         parent = root;
         while (true)
         {
-            if (child->d == parent->d) //number present in tree is entered
+            if (child->data == parent->data)
             {
-                cout << "Number present in tree" << endl;
+                cout << "Data is already there in Tree !!!";
                 break;
             }
-            else if (child->d < parent->d) //child<parent
+            else if (child->data < parent->data)
             {
-                if (parent->left_flag == 0)
+                if (parent->lbit == 0)
                 {
-                    parent->l = child;
-                    parent->left_flag = 1;
-                    pre_succ(root, pre, succ, child->d);
-                    child->r = succ; //right pointer of child node
-                    child->l = pre;  //left pointer of child node
-                    if (parent->d == root->d)
-                        root->l = child; //parent is root node break;
-                }
-                else
-                    parent = parent->l;
-            }
-            else if (child->d > parent->d) //child>parent
-            {
-                if (parent->right_flag == 0)
-                {
-                    parent->r = child;
-                    parent->right_flag = 1;
-                    pre_succ(root, pre, succ, child->d);
-                    child->r = succ;
-                    child->l = pre;
-                    if (parent->d == root->d)
-                        root->r = child; //parent=root node
+                    parent->left = child;
+                    parent->lbit = 1;
+                    Pre_Succ(root, pre, succ, child->data);
+                    child->right = succ;
+                    child->left = pre;
+                    if (parent->data == root->data)
+                    {
+                        root->left = child;
+                    }
                     break;
                 }
                 else
-                    parent = parent->r;
+                {
+                    parent = parent->left;
+                }
+            }
+            else if (child->data > parent->data)
+            {
+                if (parent->rbit == 0)
+                {
+                    parent->right = child;
+                    parent->rbit = 1;
+                    Pre_Succ(root, pre, succ, child->data);
+                    child->right = succ;
+                    child->left = pre;
+                    if (parent->data == root->data)
+                    {
+                        root->right = child;
+                    }
+                    break;
+                }
+                else
+                {
+                    parent = parent->right;
+                }
             }
         }
-        cout << endl
-             << "Enter 1 to continue otherwise enter 0";
-        cout << endl
-             << "Do you want to continue? (1/0) :";
-        cin >> cont;
-    } while (cont != 0);
-    ln = leftmost(root);
-    ln->l = dummy;
-    rn = rightmost(root);
-    rn->r = dummy;
-    cout << endl
-         << "Display Rightmost and Leftmost node :";
-    cout << endl
-         << "Rightmost Node= " << rn->d << " Leftmost Node= " << ln->d << endl;
+        cout << "Enter your choice (y/n): ";
+        cin >> ch;
+        if (ch == 'n')
+        {
+            flag = false;
+        }
+    }
+
+    extreme_leftNode = leftmost(root);
+    extreme_leftNode->left = dummy;
+    extreme_rightNode = rightmost(root);
+    extreme_rightNode->right = dummy;
 }
-void tbt::pre_succ(threaded *root, threaded *&pre, threaded *&suc, int no)
+void Threaded_BST::Pre_Succ(Thread_Node *root, Thread_Node *&pre, Thread_Node *&succ, int key)
 {
     while (root != NULL)
     {
-        if (root->d == no)
+        if (root->data == key)
         {
-            if (root->r != NULL)
+            if (root->right != NULL)
             {
-                succ = root->r;
-                while (succ->l)
-                    succ = succ->l;
+                succ = root->right;
+                while (succ->left)
+                {
+                    succ = succ->left;
+                }
             }
-            if (root->l != NULL) //leftmost no in left subtree=predecessor.
+            if (root->left != NULL)
             {
-                pre = root->l; //first no in left subtree
-                while (pre->r)
-                    pre = pre->r;
+                pre = root->left;
+                while (pre->right)
+                {
+                    pre = pre->right;
+                }
             }
             break;
         }
-        else if (no < root->d)
+        else if (key < root->data)
         {
             succ = root;
-            root = root->l;
+            root = root->left;
         }
-        else if (no > root->d)
+        else if (key > root->data)
         {
             pre = root;
-            root = root->r;
+            root = root->right;
         }
     }
 }
-threaded *tbt::leftmost(threaded *val)
+Thread_Node *Threaded_BST::leftmost(Thread_Node *value)
 {
-    if (val == NULL)
-        return NULL;
-    while (val->left_flag != 0)
-        val = val->l;
-    return val;
-}
-threaded *tbt::rightmost(threaded *val)
-{
-    if (val == NULL)
-        return NULL;
-    while (val->right_flag != 0)
-        val = val->r;
-    return val;
-}
-void tbt ::inordertra()
-{
-    curr = leftmost(root); // leftmost node
-    while (curr != dummy)
+    if (value == NULL)
     {
-        cout << curr->d << " ";
-        if (curr->right_flag == 0)
-            curr = curr->r;
-        else
-            curr = leftmost(curr->r);
+        return NULL;
     }
-}
-void tbt ::preordertra()
-{
-    curr = root;
-    while (curr != dummy)
+    while (value->lbit != 0)
     {
-        cout << curr->d << " ";
-        if (curr->l != dummy && curr->left_flag == 1)
-            curr = curr->l;
-        else if (curr->right_flag == 1)
-            curr = curr->r;
+        value = value->left;
+    }
+    return value;
+}
+Thread_Node *Threaded_BST::rightmost(Thread_Node *value)
+{
+    if (value == NULL)
+    {
+        return NULL;
+    }
+    while (value->rbit != 0)
+    {
+        value = value->right;
+    }
+    return value;
+}
+void Threaded_BST::Inorder_Traversal()
+{
+    current = leftmost(root);
+    while (current != dummy)
+    {
+        cout << current->data << " ";
+        if (current->rbit == 0)
+        {
+            current = current->right;
+        }
         else
         {
-            while (curr->r != dummy && curr->right_flag == 0)
-                curr = curr->r;
-            if (curr->r == dummy)
-                break; //rightmost node
+            current = leftmost(current->right);
+        }
+    }
+}
+void Threaded_BST::Preorder_Traversal()
+{
+    current = root;
+    while (current != dummy)
+    {
+        cout << current->data << " ";
+        if (current->left != dummy && current->lbit == 1)
+        {
+            current = current->left;
+        }
+        else if (current->rbit == 1)
+        {
+            current = current->right;
+        }
+        else
+        {
+            while (current->right != dummy && current->rbit == 0)
+            {
+                current = current->right;
+            }
+            if (current->right == dummy)
+            {
+                break;
+            }
             else
-                curr = curr->r;
+            {
+                current = current->right;
+            }
         }
     }
 }
 int main()
 {
+    Threaded_BST T;
     int choice;
-    int cont;
-    tbt t;
-    do
+    char ch;
+    bool flag = true;
+    while (flag)
     {
-        cout << endl
-             << "Enter 1 to insert no in tree";
-        cout << endl
-             << "Enter 2 ti display inorder traversal";
-        cout << endl
-             << "Enter 3 to display preorder traversal";
-        cout << endl
-             << endl
-             << "Enter your choice: ";
+        cout << "\n---------------------MENU--------------------" << endl;
+        cout << "1] Insert" << endl;
+        cout << "2] Inorder Traversal" << endl;
+        cout << "3] Preorder Traversal" << endl;
+        cout << "4] Extreme Left Data and Extreme Right Data of Tree" << endl;
+        cout << "5] Exit" << endl;
+        cout << "---------------------------------------------" << endl;
+        cout << "\nEnter choice: ";
         cin >> choice;
-        cout << endl;
         switch (choice)
         {
         case 1:
-            t.insert_node();
+            T.Insert();
             break;
         case 2:
-            cout << "INORDER TREE TRAVERSAL: ";
-            t.inordertra();
+            cout << "Inorder Traversal : ";
+            T.Inorder_Traversal();
             break;
         case 3:
-            cout << "PREORDER TREE TRAVERSAL: ";
-            t.preordertra();
+            cout << "Preorder Traversal : ";
+            T.Preorder_Traversal();
             break;
+        case 4:
+            cout << "\nRightmost Thread_Node: " << T.extreme_rightNode->data << "\nLeftmost Thread_Node: " << T.extreme_leftNode->data << endl;
+            break;
+        case 5:
+            cout << "Exiting..." << endl;
+            flag = false;
+            break;
+
         default:
-            cout << "Enter valid choice" << endl;
+            cout << "Invalid Choice..." << endl;
+            break;
         }
-        cout << endl
-             << endl
-             << "To Continue enter 1 otherwise enter 0" << endl;
-        cout << "Do you want to continue? (1/0): ";
-        cin >> cont;
-    } while (cont != 0);
+    }
     return 0;
 }
-/*
-Enter 1 to insert no in tree
-Enter 2 ti display inorder traversal 
-Enter 3 to display preorder traversal
-
-Enter your choice: 1
-
-Enter root node: 7
-
-Enter number: 4
-Number present in tree
-
-Enter 1 to continue otherwise enter 0
-Do you want to continue? (1/0) :1    
-
-Enter number: 4
-Number present in tree
-
-Enter 1 to continue otherwise enter 0
-Do you want to continue? (1/0) :1    
-
-Enter number: 8
-
-Enter 1 to continue otherwise enter 0
-Do you want to continue? (1/0) :1
-
-Enter number: 2
-Number present in tree
-
-Enter 1 to continue otherwise enter 0
-Do you want to continue? (1/0) :1
-
-Enter number: 9
-
-Enter 1 to continue otherwise enter 0
-Do you want to continue? (1/0) :0
-
-Display Rightmost and Leftmost node :
-Rightmost Node= 9 Leftmost Node= 2
-
-
-To Continue enter 1 otherwise enter 0
-Do you want to continue? (1/0): 1
-
-Enter 1 to insert no in tree
-Enter 2 ti display inorder traversal
-Enter 3 to display preorder traversal
-
-Enter your choice: 2
-
-INORDER TREE TRAVERSAL: 2 4 7 8 9
-
-To Continue enter 1 otherwise enter 0
-Do you want to continue? (1/0): 1
-
-Enter 1 to insert no in tree
-Enter 2 ti display inorder traversal
-Enter 3 to display preorder traversal
-
-Enter your choice: 3
-
-PREORDER TREE TRAVERSAL: 7 4 2 8 9
-
-*/
